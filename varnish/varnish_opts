@@ -1,0 +1,53 @@
+# Configuration file for varnish
+
+START=yes
+NFILES=131072
+MEMLOCK=82000
+
+
+# Main configuration file.
+VARNISH_VCL_CONF=/etc/varnish/default.vcl
+
+# Default address and port to bind to
+# Blank address means all IPv4 and IPv6 interfaces, otherwise specify
+# a host name, an IPv4 dotted quad, or an IPv6 address in brackets.
+VARNISH_LISTEN_PORT=80
+
+# Telnet admin interface listen address and port
+VARNISH_ADMIN_LISTEN_ADDRESS=localhost
+VARNISH_ADMIN_LISTEN_PORT=6082
+
+# The minimum number of worker threads to start
+VARNISH_MIN_THREADS=1
+
+# The Maximum number of worker threads to start
+VARNISH_MAX_THREADS=1000
+
+# Idle timeout for worker threads
+VARNISH_THREAD_TIMEOUT=120
+
+# Cache file location
+VARNISH_STORAGE_FILE=/var/lib/varnish/$INSTANCE/varnish_storage.bin
+
+# Cache file size: in bytes, optionally using k / M / G / T suffix,
+# or in percentage of available disk space using the % suffix.
+VARNISH_STORAGE_SIZE=1G
+
+# File containing administration secret
+VARNISH_SECRET_FILE=/etc/varnish/secret
+
+# Backend storage specification
+# eg: malloc,256m
+VARNISH_STORAGE="file,${VARNISH_STORAGE_FILE},${VARNISH_STORAGE_SIZE}"
+
+# Default TTL used when the backend does not specify one
+VARNISH_TTL=120
+
+# sure you update this section, too.
+DAEMON_OPTS="-a :${VARNISH_LISTEN_PORT} \
+             -f ${VARNISH_VCL_CONF} \
+             -T ${VARNISH_ADMIN_LISTEN_ADDRESS}:${VARNISH_ADMIN_LISTEN_PORT} \
+             -t ${VARNISH_TTL} \
+             -w ${VARNISH_MIN_THREADS},${VARNISH_MAX_THREADS},${VARNISH_THREAD_TIMEOUT} \
+             -S ${VARNISH_SECRET_FILE} \
+             -s ${VARNISH_STORAGE}"
