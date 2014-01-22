@@ -31,8 +31,16 @@ RUN apt-get update && apt-get install supervisor varnish nginx-extras redis-serv
 # Cleanup
 # RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/*
 
-ADD ./varnish/varnish_opts /etc/default/varnish
-ADD ./supervisor/ /etc/supervisor/conf.d/
+# Create fudge user
+RUN useradd -m fudge -s /bin/bash && mkdir /home/fudge/go -p && chown fudge.fudge /home/vagrant/go
+RUN echo "export GOPATH=/home/fudge/go" >> /home/fudge/.profile
+RUN su - fudge -c 'go install github.com/codegangsta/martini'
+RUN su - fudge -c 'go install github.com/garyburd/redigo/redis'
+
+
+ADD ./docker/varnish/varnish_opts /etc/default/varnish
+ADD ./docker/supervisor/ /etc/supervisor/conf.d/
+ADD ./ /home/vagrant/go/src/github.com/dataferret/fudge-edge
 
 EXPOSE 80 443
 
