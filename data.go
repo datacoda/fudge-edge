@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 	"log"
-	" "
+	"github.com/garyburd/redigo/redis"
 	"github.com/garyburd/redigo/redisx"
 )
 
@@ -49,13 +49,13 @@ func init() {
 func initExample() {
 	// Fill the database
 	db.CreateRoute(&RouteInfo{ Hostname: "foobar.com", Sticky:true })
-	db.AddBackend("foobar.com", "127.1.1.1")
-	db.AddBackend("foobar.com", "127.1.1.45")
+	db.AddBackend("foobar.com", "http://127.0.0.1:8081")
+	db.AddBackend("foobar.com", "http://127.0.0.1:8082")
 	db.AddBackend("foobar.com", "127.1.1.55")
 	db.RemoveBackend("foobar.com", "127.1.1.55")
 
 	db.CreateRoute(&RouteInfo{ Hostname: "example.com", Sticky:true })
-	db.AddBackend("example.com", "127.1.1.45")
+	db.AddBackend("example.com", "http://127.0.0.1:8083")
 
 	db.CreateRoute(&RouteInfo{ Hostname: "*.example.com", Sticky:false })
 	db.AddBackend("*.example.com", "127.1.1.45")
