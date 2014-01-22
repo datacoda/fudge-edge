@@ -6,6 +6,7 @@ $script = <<SCRIPT
 #echo "deb http://archive.ubuntu.com/ubuntu saucy-security main universe" >> /etc/apt/sources.list
 #dpkg --configure -a
 #apt-get update && apt-get upgrade -y -o DPkg::Options::=--force-confold
+add-apt-repository ppa:nginx/stable
 
 # Install packages
 apt-get install supervisor varnish nginx-extras redis-server lua-nginx-redis -y
@@ -17,6 +18,7 @@ chown vagrant.vagrant /home/vagrant/go
 echo "export GOPATH=/home/vagrant/go" >> /home/vagrant/.profile
 su - vagrant -c 'go install github.com/codegangsta/martini'
 su - vagrant -c 'go install github.com/garyburd/redigo/redis'
+git clone https://github.com/agentzh/lua-resty-redis.git /opt/lua-resty-redis
 SCRIPT
 
 

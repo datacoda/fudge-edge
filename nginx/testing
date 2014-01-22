@@ -1,0 +1,69 @@
+# NGINX Site configuration
+# ========================
+
+# Entry Point
+# -----------
+# It forks the route depending on whether varnish is selected as a caching layer.
+# This uses routeinfo stored in redis.
+#
+server {
+    listen 80;
+
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Protocol $scheme;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Host $http_host;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
+    proxy_read_timeout 30;
+    proxy_connect_timeout 10;
+
+    # To the Varnish Cache
+    location / {
+        include varnish-select.cfg;
+    }
+}
+
+server {
+    listen 8081;
+    root /var/www/app1;
+}
+
+server {
+    listen 8082;
+    root /var/www/app2;
+}
+
+# App-proxy
+# ---------
+# Selects the appropriate backend using a modified hipache-nginx lua script.
+# This looks it up in the redis server.
+#
+server {
+    listen 8080;
+
+    proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Host $http_host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+    proxy_read_timeout 30;
+    proxy_connect_timeout 10;
+
+    resolver 8.8.8.8;
+
+    location / {
+        include hipache-nginx.cfg;
+    }
+}

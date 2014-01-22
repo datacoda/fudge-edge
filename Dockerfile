@@ -24,6 +24,7 @@ MAINTAINER Ted Chen <ted@nephilagraphic.com>
 RUN echo "deb http://archive.ubuntu.com/ubuntu saucy main universe" > /etc/apt/sources.list
 RUN echo "deb http://archive.ubuntu.com/ubuntu saucy-security main universe" >> /etc/apt/sources.list
 RUN apt-get update && apt-get upgrade -y -o DPkg::Options::=--force-confold
+RUN add-apt-repository ppa:nginx/stable
 
 # Install packages
 RUN apt-get update && apt-get install supervisor varnish nginx-extras redis-server -y
